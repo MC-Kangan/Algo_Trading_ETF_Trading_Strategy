@@ -23,14 +23,14 @@ def compute_position_value(df: pd.DataFrame, signal: np.array, initial_capital: 
     V, Vcap = np.zeros(N), np.zeros(N)
     dV, dVcap, dVtot = np.zeros(N), np.zeros(N), np.zeros(N)
 
-    V[0] = initial_capital
+    Vcap[0] = initial_capital
     Vtot = V + Vcap
 
     # theta: dollar value of ETF held at time t (How much money are you invested into the ETF)
     theta = np.zeros(N)
 
     indice = []
-    for t, signal in enumerate(signal[:-1], 1):
+    for t, signal in enumerate(signal, 1):
         
         theta[t] = Vtot[t-1] * L * signal
         # Check if result is NaN
@@ -43,7 +43,7 @@ def compute_position_value(df: pd.DataFrame, signal: np.array, initial_capital: 
 
         M[t] = np.abs(theta[t])/L # Total margin used
 
-        dVcap[t] = (Vtot[t] - M[t]) * daily_EFFR[t] 
+        dVcap[t] = (Vtot[t-1] - M[t]) * daily_EFFR[t] 
         Vcap[t] = Vcap[t-1] + dVcap[t]
 
         dVtot[t] = dV[t] + dVcap[t]
