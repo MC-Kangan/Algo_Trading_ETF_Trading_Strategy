@@ -92,7 +92,7 @@ def compute_calmar_ratio(excess_return: np.ndarray, portfolio_value: np.ndarray)
     float: The Calmar Ratio, calculated as the standard deviation of the excess returns divided by the maximum drawdown.
     """
     # Calculating the standard deviation of the excess returns
-    CR = np.std(excess_return)
+    CR = np.mean(excess_return)
 
     # Calculating the Calmar Ratio
     return CR / compute_drawdown(portfolio_value, max_drawdown=True)
