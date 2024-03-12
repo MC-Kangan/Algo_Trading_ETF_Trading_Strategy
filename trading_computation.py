@@ -30,31 +30,7 @@ def compute_position_value(df: pd.DataFrame,
     Vtot = V + Vcap
 
     # theta: dollar value of ETF held at time t (How much money are you invested into the ETF)
-    theta = np.zeros(N)
-
-    # for t, signal in enumerate(signal[:-1], 1):
-    #     if signal > 0:
-    #         leverage = max_leverage
-    #     else:
-    #         if reduced_leverage_shorting:
-    #             leverage = max_leverage/2
-    #         else:
-    #             leverage = max_leverage
-    #     theta[t] = Vtot[t-1] * leverage * signal
-
-    #     unit[t] = theta[t] / price[t]
-    #     # Base today's trading decisions (calculating dV and dVcap) on the information available up to the end of the previous day
-    #     dV[t] = daily_excess_return[t] * theta[t]
-    #     V[t] = V[t-1] + dV[t]
-
-    #     M[t] = np.abs(theta[t])/leverage # Total margin used
-    #     # The unused capital from yesterday will be increased with the rate from yesterday
-    #     dVcap[t] = (Vtot[t-1] - M[t]) * daily_EFFR[t] 
-    #     Vcap[t] = Vcap[t-1] + dVcap[t]
-
-    #     dVtot[t] = dV[t] + dVcap[t]
-    #     Vtot[t] = Vtot[t-1] + dVtot[t]
-        
+    theta = np.zeros(N)        
         
     for t, signal in enumerate(signal):
         
@@ -70,6 +46,13 @@ def compute_position_value(df: pd.DataFrame,
             theta[t] = unit[t] * price[t]
             
         else: # Long or short
+            if signal > 0:
+                leverage = max_leverage
+            else:
+                if reduced_leverage_shorting:
+                    leverage = max_leverage/2
+                else:
+                    leverage = max_leverage
             theta[t] = unit[t] * price[t] * signal
             unit[t] = theta[t] / price[t]
             Vcap[t] = 0
