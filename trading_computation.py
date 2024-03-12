@@ -8,7 +8,8 @@ def compute_position_value(df: pd.DataFrame,
                            signal: np.array, 
                            initial_capital: int, 
                            max_leverage: int, 
-                           reduced_leverage_shorting: bool = False) -> dict:
+                           reduced_leverage_shorting: bool = False,
+                           hold_at_signal_0: bool = False) -> dict:
 
     N = len(df)
     
@@ -30,42 +31,41 @@ def compute_position_value(df: pd.DataFrame,
     Vtot = V + Vcap
 
     # theta: dollar value of ETF held at time t (How much money are you invested into the ETF)
-    theta = np.zeros(N)        
-        
+    theta = np.zeros(N)    
+    
     for t, signal in enumerate(signal):
-        
-        if t == 0: # First day: no trade
+        if t == 0:
             dVcap[t] = Vcap[t] * daily_EFFR[t]
-            dVtot[t] = dVcap[t] + dV[t]
+            Vtot[t] = Vcap[t] + dVcap[t]
+            continue
         
-        # Get today total values
-        Vtot[t] = Vtot[t-1] + dVtot[t-1]
+        if signal > 0:
+            leverage = max_leverage
+        else:
+            if reduced_leverage_shorting:
+                leverage = max_leverage/2
+            else:
+                leverage = max_leverage
         
-        if signal == 0: # Hold
+        if hold_at_signal_0 and signal == 0: # Hold
             unit[t] = unit[t-1]
             theta[t] = unit[t] * price[t]
             
-        else: # Long or short
-            if signal > 0:
-                leverage = max_leverage
-            else:
-                if reduced_leverage_shorting:
-                    leverage = max_leverage/2
-                else:
-                    leverage = max_leverage
-            theta[t] = unit[t] * price[t] * signal
+        else:
+            theta[t] = Vtot[t-1] * leverage * signal
             unit[t] = theta[t] / price[t]
-            Vcap[t] = 0
-        
-        M[t] = np.abs(theta[t]) / leverage
-        Vcap[t] = Vtot[t] - M[t]
-        
-        # Calculate all the PnL
-        dV[t] = daily_excess_return[t] * theta[t]
-        dVcap[t] = daily_EFFR[t] * Vcap[t]
-        dVtot[t] = dV[t] + dVcap[t]
-            
 
+        dV[t] = daily_excess_return[t] * theta[t]
+        V[t] = V[t-1] + dV[t]
+
+        M[t] = np.abs(theta[t])/leverage # Total margin used
+
+        dVcap[t] = (Vtot[t-1] - M[t]) * daily_EFFR[t] 
+        Vcap[t] = Vcap[t-1] + dVcap[t]
+
+        dVtot[t] = dV[t] + dVcap[t]
+        Vtot[t] = Vtot[t-1] + dVtot[t]    
+        
     return {'Vtot': Vtot,'Vcap': Vcap, 'V': V,
             'dVtot': dVtot,'dVcap': dVcap, 'dV': dV,
             'theta': theta, 'M': M}
