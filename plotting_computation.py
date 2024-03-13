@@ -4,9 +4,30 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
+def plot_signals(strategy_data, signal):
+    # Plot the buy and sell signals on top of the closing price
+    
+    plt.figure(figsize=(12,4))
+    plt.plot(strategy_data['Date'], strategy_data['Close'], label='Close Price',  color = 'black', lw = 1,  alpha=0.5)
+    
+    # Find the price and date when buying and selling
+    buy_price = np.array(strategy_data['Close'])[np.where(signal == 1)]
+    buy_price_time = np.array(strategy_data['Date'])[np.where(signal == 1)]
+    sell_price = np.array(strategy_data['Close'])[np.where(signal == -1)]
+    sell_price_time = np.array(strategy_data['Date'])[np.where(signal == -1)]
+    
+    plt.scatter(buy_price_time, buy_price, label='Buy Signal', marker='^', alpha=1, color='green')
+    plt.scatter(sell_price_time, sell_price, label='Sell Signal', marker='v', alpha=1, color='red')
+    plt.title('Buy & Sell Signals')
+    plt.xlabel('Date')
+    plt.ylabel('Close Price USD ($)')
+    plt.legend(loc='upper left')
+    
+
 def plot_position(date, theta, Vtot, leverage):
     
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = plt.subplots(1, 1, figsize = (16, 4))
 
     # plot position on training set
     ax.plot(date, theta, color = 'black', lw = 1, alpha = 1, label = r'$\theta_t$')

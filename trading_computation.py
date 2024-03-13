@@ -53,6 +53,7 @@ def compute_position_value(df: pd.DataFrame,
             
         else:
             theta[t] = Vtot[t-1] * leverage * signal
+            # theta[t] = Vtot[t-1] * leverage * signal
             unit[t] = theta[t] / price[t]
 
         dV[t] = daily_excess_return[t] * theta[t]
@@ -61,10 +62,21 @@ def compute_position_value(df: pd.DataFrame,
         M[t] = np.abs(theta[t])/leverage # Total margin used
 
         dVcap[t] = (Vtot[t-1] - M[t]) * daily_EFFR[t] 
+        
+        # Vtot[t-1] - M[t] refers to the total amount of money not being used to invest in ETF, this value should not be less than 0
+        if dVcap[t] < 0:
+            dVcap[t] = 0
         Vcap[t] = Vcap[t-1] + dVcap[t]
 
         dVtot[t] = dV[t] + dVcap[t]
-        Vtot[t] = Vtot[t-1] + dVtot[t]    
+        Vtot[t] = Vtot[t-1] + dVtot[t]
+        
+        # If the position value is greater than the bound, which is +- Vtot * L
+        if np.abs(theta[t]) > Vtot[t] * leverage:
+            Vcap[t] += theta[t] - Vtot[t] * leverage
+            # If the difference is +ve, you need to sell shares to fund Vcap.
+            # If the difference id -ve, you need to buy shares to fund investment.
+            unit[t] -= (theta[t] - (Vtot[t] * leverage * np.sign(theta[t])))/price[t]
         
     return {'Vtot': Vtot,'Vcap': Vcap, 'V': V,
             'dVtot': dVtot,'dVcap': dVcap, 'dV': dV,
