@@ -27,7 +27,7 @@ def compute_position_value(df: pd.DataFrame,
     V, Vcap = np.zeros(N), np.zeros(N)
     dV, dVcap, dVtot = np.zeros(N), np.zeros(N), np.zeros(N)
 
-    Vcap[0] = initial_capital
+    V[0] = initial_capital
     Vtot = V + Vcap
 
     # theta: dollar value of ETF held at time t (How much money are you invested into the ETF)
@@ -52,7 +52,7 @@ def compute_position_value(df: pd.DataFrame,
             theta[t] = unit[t] * price[t]
             
         else:
-            theta[t] = Vtot[t-1] * leverage * signal
+            theta[t] = V[t-1] * leverage * signal
             # theta[t] = Vtot[t-1] * leverage * signal
             unit[t] = theta[t] / price[t]
 
@@ -72,11 +72,11 @@ def compute_position_value(df: pd.DataFrame,
         Vtot[t] = Vtot[t-1] + dVtot[t]
         
         # If the position value is greater than the bound, which is +- Vtot * L
-        if np.abs(theta[t]) > Vtot[t] * leverage:
-            Vcap[t] += theta[t] - Vtot[t] * leverage
+        if np.abs(theta[t]) > V[t] * leverage:
+            Vcap[t] += theta[t] - V[t] * leverage
             # If the difference is +ve, you need to sell shares to fund Vcap.
             # If the difference id -ve, you need to buy shares to fund investment.
-            unit[t] -= (theta[t] - (Vtot[t] * leverage * np.sign(theta[t])))/price[t]
+            unit[t] -= (theta[t] - (V[t] * leverage * np.sign(theta[t])))/price[t]
         
     return {'Vtot': Vtot,'Vcap': Vcap, 'V': V,
             'dVtot': dVtot,'dVcap': dVcap, 'dV': dV,
