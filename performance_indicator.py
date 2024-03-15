@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+    
+
 def compute_sharpe_ratio(excess_return: np.ndarray) -> float:
     """
     Compute the Sharpe Ratio for a given series of excess returns.

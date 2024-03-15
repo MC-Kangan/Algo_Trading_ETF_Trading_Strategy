@@ -92,6 +92,28 @@ def calculate_turnover(theta: np.ndarray, price: np.array, mode = 'dollar'):
     else:
         raise ValueError(f'Mode {mode} is not found.')
     
+    
+def calculate_rolling_turnover(theta: np.ndarray, price: np.array, window_size=7, mode='dollar'):
+    if mode == 'dollar':
+        turnover = [np.sum(np.abs(np.diff(theta[i:i+window_size]))) for i in range(len(theta) - window_size + 1)]
+    elif mode == 'unit':
+        turnover = [np.sum(np.abs(np.diff(theta[i:i+window_size] / price[i:i+window_size]))) for i in range(len(theta) - window_size + 1)]
+    else:
+        raise ValueError(f'Mode {mode} is not found.')
+    
+    turnover_pad = [0] * (window_size - 1) + turnover
+    return np.array(turnover_pad)
+    
+    
+def calculate_cummulative_turnover(theta: np.ndarray, price: np.array, mode='dollar'):
+    if mode == 'dollar':
+        turnover = [np.sum(np.abs(np.diff(theta[0:i]))) for i in range(len(theta)+ 1)]
+    elif mode == 'unit':
+        turnover = [np.sum(np.abs(np.diff(theta[0:i] / price[0:i]))) for i in range(len(theta)+ 1)]
+    else:
+        raise ValueError(f'Mode {mode} is not found.')
+    
+    return np.array(turnover)
 
 def calculate_PnL(Vtot: np.ndarray):
     return np.diff(Vtot)
