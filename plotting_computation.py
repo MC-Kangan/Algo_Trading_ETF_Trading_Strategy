@@ -91,7 +91,7 @@ def plot_position_compare(train_set_date, train_theta, train_V, test_set_date, t
     # plot position on training set
     ax[0].plot(train_set_date, train_theta, color = 'black', lw = 1, alpha = 1, label = r'$\theta_t$')
     ax[0].fill_between(train_set_date, - leverage * train_V, leverage * train_V, color = 'red', alpha = 0.2, label = r'$[-V \cdot L, V \cdot L]$')
-    ax[0].set_title('Training Set')
+    ax[0].set_title('Training set')
     ax[0].set_xlabel('Date')
     ax[0].set_ylabel('Position in dollars (USD)')
     ax[0].legend(loc='upper left')
@@ -101,7 +101,7 @@ def plot_position_compare(train_set_date, train_theta, train_V, test_set_date, t
     # plot position on testing set
     ax[1].plot(test_set_date, test_theta, color = 'black', lw = 1, alpha = 1, label = r'$\theta_t$')
     ax[1].fill_between(test_set_date, - leverage * test_V, leverage * test_V, color = 'red', alpha = 0.2, label = r'$[-V \cdot L, V \cdot L]$')
-    ax[1].set_title('Testing Set')
+    ax[1].set_title('Testing set')
     ax[1].set_xlabel('Date')
     ax[1].set_ylabel('Position in dollars (USD)')
     ax[1].legend(loc='upper left')
@@ -139,23 +139,23 @@ def plot_PnL(date, dV, dVcap, dVtot):
     ax[0, 2].tick_params(axis = 'x',labelrotation=45)
     
     ax[1, 0].plot(date, np.cumsum(dV), color = 'black', lw = 1, alpha = 1, label = r'$\deltaV_t$')
-    ax[1, 0].set_title('Cummulative PnL in asset')
+    ax[1, 0].set_title('Cumulative PnL in asset')
     ax[1, 0].set_xlabel('Time')
-    ax[1, 0].set_ylabel(r'Cummulative $\Delta V_t$')
+    ax[1, 0].set_ylabel(r'Cumulative $\Delta V_t$')
     ax[1, 0].grid(True)
     ax[1, 0].tick_params(axis = 'x',labelrotation=45)
     
     ax[1, 1].plot(date, np.cumsum(dVcap), color = 'black', lw = 1, alpha = 1, label = r'$\deltaV_t^cap$')
-    ax[1, 1].set_title('Cummulative PnL in unused capital')
+    ax[1, 1].set_title('Cumulative PnL in unused capital')
     ax[1, 1].set_xlabel('Time')
-    ax[1, 1].set_ylabel(r'Cummulative $\Delta V_t^{cap}$')
+    ax[1, 1].set_ylabel(r'Cumulative $\Delta V_t^{cap}$')
     ax[1, 1].grid(True)
     ax[1, 1].tick_params(axis = 'x',labelrotation=45)
     
     ax[1, 2].plot(date, np.cumsum(dVtot), color = 'black', lw = 1, alpha = 1, label = r'$\deltaV_t^total$')
-    ax[1, 2].set_title('Cummulative PnL in total capital')
+    ax[1, 2].set_title('Cumulative PnL in total capital')
     ax[1, 2].set_xlabel('Time')
-    ax[1, 2].set_ylabel(r'Cummulative $\Delta V_t^{total}$')
+    ax[1, 2].set_ylabel(r'Cumulative $\Delta V_t^{total}$')
     ax[1, 2].grid(True)
     ax[1, 2].tick_params(axis = 'x', labelrotation=45)
 
@@ -168,6 +168,7 @@ def plot_strategy(df: pd.DataFrame, result_dict: dict, signal: np.array, leverag
     plot_signals(df, signal)
     plot_position(df['Date'], result_dict['theta'], result_dict['V'], leverage) 
     plot_PnL(df['Date'], result_dict['dV'], result_dict['dVcap'], result_dict['dVtot'])
+
 
 
 def plot_turnover(df, turnover_dollar, turnover_unit, mode = 'cummulative'):
