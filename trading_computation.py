@@ -94,7 +94,6 @@ def compute_position_value(df: pd.DataFrame,
             'dVtot': dVtot,'dVcap': dVcap, 'dV': dV,
             'theta': theta, 'M': M}
     
-    
 
 def calculate_turnover(theta: np.ndarray, price: np.array, mode = 'dollar'):
     if mode == 'dollar':
@@ -126,6 +125,7 @@ def calculate_cummulative_turnover(theta: np.ndarray, price: np.array, mode='dol
         raise ValueError(f'Mode {mode} is not found.')
     
     return np.array(turnover)
+
 
 def calculate_PnL(Vtot: np.ndarray):
     return np.diff(Vtot)
